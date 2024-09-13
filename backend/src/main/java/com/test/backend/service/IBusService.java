@@ -12,7 +12,7 @@ public interface IBusService {
 
     Optional<BusDto> getBusById(Long id);
 
-    Optional<BusDto> getBusByBusNumber(String busNumber);
+    Optional<BusDto> getBusByBusNumber(Integer busNumber);
 
     List<BusDto> getAllBuses();
 

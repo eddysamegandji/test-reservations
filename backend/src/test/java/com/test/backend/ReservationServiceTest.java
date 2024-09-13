@@ -1,17 +1,21 @@
 package com.test.backend;
 
+import com.test.backend.api.dto.BusDto;
 import com.test.backend.api.dto.ClientDto;
 import com.test.backend.api.dto.ReservationDto;
 import com.test.backend.api.dto.TrajetDto;
+import com.test.backend.domain.Bus;
 import com.test.backend.domain.Client;
 import com.test.backend.domain.Reservation;
 import com.test.backend.domain.Trajet;
 import com.test.backend.mapper.ReservationMapper;
+import com.test.backend.repository.BusRepository;
 import com.test.backend.repository.ReservationRepository;
 import com.test.backend.service.IReservationService;
 import com.test.backend.service.impl.ReservationServiceImpl;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,23 +37,32 @@ class ReservationServiceTest {
     @Mock
     private ReservationMapper reservationMapper;
 
+    @Mock
+    private BusRepository busRepository;
+
     private IReservationService reservationService;
 
     @BeforeEach
     void setUp() {
-        reservationService = new ReservationServiceImpl(reservationRepository, reservationMapper);
+        reservationService = new ReservationServiceImpl(reservationRepository, reservationMapper, busRepository);
     }
 
     @Test
     void createReservation_should_save_and_return_the_reservation_when_trajets_is_not_empty() {
         // given
-        TrajetDto trajetDto1 = new TrajetDto(1L, 2, LocalTime.now(), 2.5, "A200");
+        BusDto busDto = new BusDto(1L, 200, 30, 5.0);
+        TrajetDto trajetDto1 = new TrajetDto(1L, 2, LocalDateTime.now(), busDto);
         ClientDto clientDto = new ClientDto(1L, "Test", "test@gmail.com");
-        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.singletonList(trajetDto1), clientDto, null);
-        Reservation entity = new Reservation(1L, LocalDate.now(), List.of(new Trajet(1L, 2, LocalTime.now(), 2.5, null)), new Client(), null);
-
+        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.singletonList(trajetDto1), clientDto, 0.0);
+        Bus bus = new Bus(1L, 200, 30, 5.0);
+        Reservation entity = new Reservation(1L, LocalDate.now(), List.of(new Trajet(1L, 2, LocalDateTime.now(), 2.5, bus)), new Client(), 0.0);
+        Set<Integer> busNumbers = dto.trajets().stream()
+                .map(TrajetDto::bus)
+                .map(BusDto::busNumber)
+                .collect(Collectors.toSet());
 
         // when
+        when(busRepository.findByBusNumberIn(busNumbers)).thenReturn(List.of(bus));
         when(reservationMapper.dtoToEntity(any())).thenReturn(entity);
         when(reservationRepository.save(entity)).thenReturn(entity);
         when(reservationMapper.entityToDto(entity)).thenReturn(dto);
@@ -57,9 +70,9 @@ class ReservationServiceTest {
         Optional<ReservationDto> result = reservationService.createReservation(dto);
 
         // then
-        assertNotNull(entity.getReservationPrice());
         verify(reservationRepository).save(entity);
         assertNotNull(result);
+        assertTrue(result.isPresent());
         assertEquals(dto, result.get());
     }
 
@@ -67,8 +80,8 @@ class ReservationServiceTest {
     void createReservation_should_throw_exception_when_trajets_is_empty() {
         // given
         ClientDto clientDto = new ClientDto(1L, "Test", "test@gmail.com");
-        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.emptyList(), clientDto, null);
-        Reservation entity = new Reservation(1L, LocalDate.now(), Collections.emptyList(), new Client(), null);
+        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.emptyList(), clientDto, 0.0);
+        Reservation entity = new Reservation(1L, LocalDate.now(), Collections.emptyList(), new Client(), 0.0);
 
         // when and then
         assertThrows(NullPointerException.class, () -> reservationService.createReservation(dto));
@@ -78,21 +91,27 @@ class ReservationServiceTest {
     @Test
     void updateReservation_should_save_and_return_the_reservation_when_trajets_is_not_empty() {
         // given
-        TrajetDto trajetDto1 = new TrajetDto(1L, 2, LocalTime.now(), 2.5, "A200");
+        BusDto busDto = new BusDto(1L, 200, 30, 5.0);
+        TrajetDto trajetDto1 = new TrajetDto(1L, 2, LocalDateTime.now(), busDto);
         ClientDto clientDto = new ClientDto(1L, "Test", "test@gmail.com");
-        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.singletonList(trajetDto1), clientDto, null);
-        Reservation entity = new Reservation(1L, LocalDate.now(), List.of(new Trajet(1L, 2, LocalTime.now(), 2.5, null)), new Client(), null);
+        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.singletonList(trajetDto1), clientDto, 0.0);
+        Bus bus = new Bus(1L, 200, 30, 5.0);
+        Reservation entity = new Reservation(1L, LocalDate.now(), List.of(new Trajet(1L, 2, LocalDateTime.now(), 2.5, bus)), new Client(), 0.0);
+        Set<Integer> busNumbers = dto.trajets().stream()
+                .map(TrajetDto::bus)
+                .map(BusDto::busNumber)
+                .collect(Collectors.toSet());
 
+        // when
+        when(busRepository.findByBusNumberIn(busNumbers)).thenReturn(List.of(bus));
         when(reservationRepository.findById(anyLong())).thenReturn(Optional.of(entity));
         when(reservationMapper.dtoToEntity(any())).thenReturn(entity);
         when(reservationRepository.save(entity)).thenReturn(entity);
         when(reservationMapper.entityToDto(entity)).thenReturn(dto);
 
-        // when
         Optional<ReservationDto> result = reservationService.updateReservation(1L, dto);
 
         // then
-        assertNotNull(entity.getReservationPrice());
         verify(reservationRepository).save(entity);
         assertTrue(result.isPresent());
         assertEquals(dto, result.get());
@@ -101,9 +120,10 @@ class ReservationServiceTest {
     @Test
     void updateReservation_should_throw_exception_when_id_does_not_exist() {
         // given
-        TrajetDto trajetDto1 = new TrajetDto(1L, 2, LocalTime.now(), 2.5, "A200");
+        BusDto busDto = new BusDto(1L, 200, 30, 5.0);
+        TrajetDto trajetDto1 = new TrajetDto(1L, 2, LocalDateTime.now(),busDto);
         ClientDto clientDto = new ClientDto(1L, "Test", "test@gmail.com");
-        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.singletonList(trajetDto1), clientDto, null);
+        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.singletonList(trajetDto1), clientDto, 0.0);
 
         when(reservationRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -116,8 +136,8 @@ class ReservationServiceTest {
     void getReservation_should_return_the_reservation_when_the_reservation_id_exists() {
         // given
         ClientDto clientDto = new ClientDto(1L, "Test", "test@gmail.com");
-        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.emptyList(), clientDto, null);
-        Reservation entity = new Reservation(1L, LocalDate.now(), Collections.emptyList(), new Client(), null);
+        ReservationDto dto = new ReservationDto(null, LocalDate.now(), Collections.emptyList(), clientDto, 0.0);
+        Reservation entity = new Reservation(1L, LocalDate.now(), Collections.emptyList(), new Client(), 0.0);
         Long id = 1L;
 
         // when

@@ -16,9 +16,10 @@ public class Bus {
     private Long id;
 
     @Column(unique = true)
-    private String busNumber;
+    private Integer busNumber;
 
-    @OneToOne
-    private Trajet trajet;
+    private int capacity;
+
+    private double unitTrajetPrice;
 
 }

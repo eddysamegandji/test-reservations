@@ -1,7 +1,6 @@
 package com.test.backend.service.impl;
 
 import com.test.backend.api.dto.TrajetDto;
-import com.test.backend.domain.Bus;
 import com.test.backend.domain.Trajet;
 import com.test.backend.mapper.TrajetMapper;
 import com.test.backend.repository.BusRepository;
@@ -24,26 +23,20 @@ public class TrajetServiceImpl implements ITrajetService {
 
     @Override
     public Optional<TrajetDto> createTrajet(TrajetDto trajetDto) {
-        Optional<Bus> bus = busRepository.findByBusNumber(trajetDto.busNumber());
         Trajet trajet = trajetMapper.dtoToEntity(trajetDto);
+        trajet = trajetRepository.save(trajet);
+        return Optional.of(trajetMapper.entityToDto(trajet));
 
-        if (bus.isPresent()) {
-            trajet.setBus(bus.get());
-            trajetRepository.save(trajet);
-            return Optional.of(trajetMapper.entityToDto(trajet));
-        }
-        return Optional.empty();
     }
 
     @Override
     public Optional<TrajetDto> updateTrajet(Long id, TrajetDto trajetDto) {
-        Optional<Trajet> optionalTrajet = trajetRepository.findById(id);
-        if (optionalTrajet.isPresent()) {
-            Trajet trajet = optionalTrajet.get();
+        Optional<Trajet> existingTrajet = trajetRepository.findById(id);
+        if (existingTrajet.isPresent()) {
+            Trajet trajet = existingTrajet.get();
             trajet.setNbrPlaces(trajetDto.nbrPlaces());
             trajet.setDepartureTime(trajetDto.departureTime());
-            trajet.setUnitTrajetPrice(trajetDto.unitTrajetPrice());
-            trajetRepository.save(trajet);
+            trajet = trajetRepository.save(trajet);
             return Optional.of(trajetMapper.entityToDto(trajet));
         }
         return Optional.empty();

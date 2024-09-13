@@ -20,19 +20,13 @@ public class Reservation {
 
     private LocalDate reservationDate;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Trajet> trajets;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
-    private Double reservationPrice;
-
-    public void calculateReservationPrice() {
-        this.reservationPrice = trajets.stream()
-                .mapToDouble(trajet -> trajet.getUnitTrajetPrice() * trajet.getNbrPlaces() )
-                .sum();
-    }
+    private double reservationPrice;
 
 }

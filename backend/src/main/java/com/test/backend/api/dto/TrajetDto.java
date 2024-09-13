@@ -1,6 +1,6 @@
 package com.test.backend.api.dto;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
-public record TrajetDto(Long id, Integer nbrPlaces, LocalTime departureTime, Double unitTrajetPrice, String busNumber) {
+public record TrajetDto(Long id, Integer nbrPlaces, LocalDateTime departureTime, BusDto bus) {
 }

@@ -1,7 +1,7 @@
 <h1>Mes réservations</h1>
 <div class="d-flex justify-content-end">
     <div class="btn-group" role="group">
-        <a id="addButton" type="button" aria-hidden="true" class="btn btn-outline-primary btn-sm">Ajouter</a>
+        <button id="addButton" type="button" class="btn btn-outline-danger btn-sm" [routerLink]="['/add-reservations']">Ajouter</button>
         <a id="editButton" type="button" class="btn btn-outline-success btn-sm">Modifier</a>
         <button id="deleteButton" type="button" class="btn btn-outline-danger btn-sm" (click)="confirmDelete()">Supprimer</button>
     </div>

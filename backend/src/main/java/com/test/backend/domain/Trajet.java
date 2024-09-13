@@ -1,7 +1,7 @@
 package com.test.backend.domain;
 
 import jakarta.persistence.*;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import lombok.*;
 
 @Entity
@@ -16,13 +16,13 @@ public class Trajet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer nbrPlaces;
+    private int nbrPlaces;
 
-    private LocalTime departureTime;
+    private LocalDateTime departureTime;
 
-    private Double unitTrajetPrice;
+    private double trajetPrice;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.MERGE)
     private Bus bus;
 
 }
