@@ -1,6 +1,7 @@
 package com.test.backend.domain;
 
 import jakarta.persistence.*;
+import java.time.LocalTime;
 import lombok.*;
 
 @Entity
@@ -21,5 +22,7 @@ public class Bus {
     private int capacity;
 
     private double unitTrajetPrice;
+
+    private LocalTime time;
 
 }

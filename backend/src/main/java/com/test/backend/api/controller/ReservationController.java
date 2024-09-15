@@ -48,7 +48,7 @@ public class ReservationController {
 
     @GetMapping
     public ResponseEntity<List<ReservationDto>> getAllReservations() {
-        // Hard coded client. should be if spring security SecurityContextHolder.getContext().getAuthentication().getPrincipal() to get the active user
+        // Hard coded client as asked. should be if spring security SecurityContextHolder.getContext().getAuthentication().getPrincipal() to get the active user
         Long clientId = 1L;
         List<ReservationDto> reservations = reservationService.getReservationsByClientId(clientId);
         return reservations.isEmpty() ? noContent().build() : ok(reservations);

@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AddReservationsRoutingModule } from './add-reservations-routing.module'; 
-import { AddReservationsComponent } from './add-reservations.component';
+import { ReservationsFormRoutingModule } from './reservations-form-routing.module'; 
+import { ReservationsFormComponent } from './reservations-form.component';
 
 
 @NgModule({
   imports: [
     CommonModule,
-    AddReservationsRoutingModule,
-    AddReservationsComponent,
+    ReservationsFormRoutingModule,
+    ReservationsFormComponent,
   ],
-  exports: [AddReservationsComponent]
+  exports: [ReservationsFormComponent]
 })
 export class AddReservationsModule { }

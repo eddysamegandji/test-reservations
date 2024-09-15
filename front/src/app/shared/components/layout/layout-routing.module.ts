@@ -15,7 +15,7 @@ const routes: Routes = [{
       path: 'reservations', loadChildren: () => import('src/app/features/reservations/reservations-list/reservations.module').then(m => m.ReservationsModule),
     },
     {
-      path: 'add-reservations', loadChildren: () => import('src/app/features/reservations/add-reservations/add-reservations.module').then(m => m.AddReservationsModule),
+      path: 'reservation', loadChildren: () => import('src/app/features/reservations/reservations-form/reservations-form.module').then(m => m.ReservationsFormModule),
     }
   ]
 }];

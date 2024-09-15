@@ -1,0 +1,3 @@
+.table-striped > tbody > tr.selectedRow *{
+    background-color: darkcyan;
+}

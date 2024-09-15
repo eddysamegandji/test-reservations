@@ -1,6 +1,5 @@
 package com.test.backend.mapper;
 
-
 import com.test.backend.api.dto.TrajetDto;
 import com.test.backend.domain.Trajet;
 import org.mapstruct.Mapper;

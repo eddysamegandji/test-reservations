@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { Reservation } from '../models/reservation.model';
 import { environment } from '../../../environments/environment';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +14,6 @@ export class ReservationService {
   constructor(private http: HttpClient) { }
 
   createReservation(reservation: Reservation): Observable<Reservation> {
-    console.log("blabla", reservation);
     return this.http.post<Reservation>(`${this.apiUrl}/reservations`, reservation);
   }
 

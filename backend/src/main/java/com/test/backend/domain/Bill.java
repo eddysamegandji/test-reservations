@@ -1,6 +1,6 @@
 package com.test.backend.domain;
 
-import com.test.backend.PaymentMethodEnum;
+import com.test.backend.enums.PaymentMethodEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,10 +16,11 @@ public class Bill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "reservation_id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Reservation reservation;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PaymentMethodEnum paymentMethod;
 
 }

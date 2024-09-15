@@ -1,7 +1,8 @@
 package com.test.backend.api.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-public record ReservationDto(Long id, LocalDate reservationDate, List<TrajetDto> trajets, ClientDto client, double reservationPrice) {
+public record ReservationDto(Long id, LocalDateTime reservationDate, List<TrajetDto> trajets, ClientDto client,
+                             double reservationPrice, int nbBillets, boolean isPaid, String paymentMethod) {
 }
